@@ -1,0 +1,19 @@
+{
+  "template": "https://github.com/mrsimonemms/new",
+  "commit": "fe1b643141959b4eb2f239ba9ab4e4c2dff6387c",
+  "checkout": "main",
+  "context": {
+    "cookiecutter": {
+      "project_name": "nestjs-modules",
+      "description": "A collection of NestJS modules",
+      "author": "Simon Emms <simon@simonemms.com>",
+      "type": "nestjs",
+      "_template": "https://github.com/mrsimonemms/new",
+      "_commit": "fe1b643141959b4eb2f239ba9ab4e4c2dff6387c"
+    }
+  },
+  "directory": "js",
+  "skip": [
+    ".git"
+  ]
+}
