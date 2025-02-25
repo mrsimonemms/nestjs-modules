@@ -15,8 +15,15 @@
  */
 import { AuthModule } from '@mrsimonemms/auth';
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [AuthModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [],
+    }),
+    AuthModule,
+  ],
 })
 export class AppModule {}
