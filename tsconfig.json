@@ -16,6 +16,14 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": true,
     "strictBindCallApply": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "paths": {
+      "@mrsimonemms/auth": [
+        "libs/auth/src"
+      ],
+      "@mrsimonemms/auth/*": [
+        "libs/auth/src/*"
+      ]
+    }
   }
 }

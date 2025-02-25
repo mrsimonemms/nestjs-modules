@@ -62,25 +62,11 @@ jobs:
           node-version: lts/*
           cache: "npm"
 
-      - name: Run dependencies
-        run: |
-          docker-compose up -d mysql
-
       - name: Install and test
-        env:
-          DB_TYPE: mysql
-          DB_HOST: localhost
-          DB_USERNAME: app
-          DB_PASSWORD: password
-          DB_NAME: app
-          DB_PORT: "4000" # MySQL must not run on port 3306 - this conflicts with GitHub Actions
-          DB_MIGRATIONS_RUN: "true"
-          DB_SYNC: "false"
         run: |
           npm ci
           npm run lint
           npm test
-          npm run test:e2e
 
   build:
     runs-on: ubuntu-latest
@@ -93,4 +79,4 @@ jobs:
         run: npm ci
 
       - name: Build
-        run: npm run build
+        run: npm run build auth

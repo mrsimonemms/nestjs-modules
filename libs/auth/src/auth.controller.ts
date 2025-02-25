@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AuthModule } from '@mrsimonemms/auth';
-import { Module } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 
-@Module({
-  imports: [AuthModule],
-})
-export class AppModule {}
+@Controller('auth')
+export class AuthController {
+  @Get('/')
+  hello() {
+    return { hello: 'world' };
+  }
+}

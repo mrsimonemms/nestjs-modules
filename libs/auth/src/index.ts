@@ -13,10 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AuthModule } from '@mrsimonemms/auth';
-import { Module } from '@nestjs/common';
 
-@Module({
-  imports: [AuthModule],
-})
-export class AppModule {}
+export * from './auth.module';
+export * from './auth.service';
