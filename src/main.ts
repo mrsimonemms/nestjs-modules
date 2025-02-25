@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import secureSession from '@fastify/secure-session';
+import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import {
   FastifyAdapter,
@@ -28,15 +29,14 @@ async function bootstrap() {
     new FastifyAdapter(),
   );
 
-  await app.register(secureSession, {
-    salt: 'mq9hDxBVDbspDR6n',
-    secret: 'averylogphrasebiggerthanthirtytwochars',
-    cookie: {
-      sameSite: 'lax',
-    },
-  });
+  const config = app.get(ConfigService);
 
-  await app.listen(3000, '0.0.0.0');
+  await app.register(secureSession, config.getOrThrow('session'));
+
+  await app.listen(
+    config.getOrThrow('server.port'),
+    config.getOrThrow('server.host'),
+  );
 }
 
 bootstrap().catch((err: Error) => {

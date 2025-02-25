@@ -21,7 +21,21 @@ import { ConfigModule } from '@nestjs/config';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [],
+      load: [
+        () => ({
+          server: {
+            port: 3000,
+            host: '0.0.0.0',
+          },
+          session: {
+            salt: 'mq9hDxBVDbspDR6n',
+            secret: 'averylogphrasebiggerthanthirtytwochars',
+            cookie: {
+              sameSite: 'lax',
+            },
+          },
+        }),
+      ],
     }),
     AuthModule,
   ],
