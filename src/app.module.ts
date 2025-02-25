@@ -15,7 +15,8 @@
  */
 import { AuthModule } from '@mrsimonemms/auth';
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   imports: [
@@ -37,7 +38,27 @@ import { ConfigModule } from '@nestjs/config';
         }),
       ],
     }),
-    AuthModule,
+    TypeOrmModule.forRoot({
+      type: 'mysql',
+      host: process.env.DB_HOST,
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+      port: process.env.DB_PORT ? Number(process.env.DB_PORT) : undefined,
+      synchronize: true,
+      autoLoadEntities: true,
+    }),
+    AuthModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (cfg: ConfigService) => {
+        return {
+          jwtSecret: cfg.getOrThrow('auth.jwtSecret'),
+          passportStrategies: [],
+          path: 'customPath',
+        };
+      },
+    }),
   ],
 })
 export class AppModule {}

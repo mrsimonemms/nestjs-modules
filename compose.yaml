@@ -1,0 +1,26 @@
+services:
+  app:
+    image: node:lts
+    environment:
+      DB_HOST: db
+      DB_NAME: app
+      DB_PASSWORD: password
+      DB_USERNAME: app
+    ports:
+      - 3000:3000
+    working_dir: /home/node/app
+    volumes:
+      - .:/home/node/app
+    links:
+      - db
+    command: npm run start:dev
+
+  db:
+    image: mysql:8
+    environment:
+      MYSQL_DATABASE: app
+      MYSQL_RANDOM_ROOT_PASSWORD: "true"
+      MYSQL_PASSWORD: password
+      MYSQL_USER: app
+    ports:
+      - 3306:3306
