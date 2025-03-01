@@ -79,4 +79,19 @@ jobs:
         run: npm ci
 
       - name: Build
-        run: npm run build auth
+        run: |
+          npm run build auth -- --tsc
+          cp libs/auth/package* ./dist/libs/auth
+
+      - name: Publish
+        working-directory: ./dist/libs/auth
+        run: |
+          npm version 0.0.0-$(git rev-parse --short HEAD)
+
+      - uses: JS-DevTools/npm-publish@v3
+        id: npm
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          tag: dev
+          package: ./dist/libs/auth
+          access: public
