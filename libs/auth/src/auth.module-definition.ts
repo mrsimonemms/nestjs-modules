@@ -13,22 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Test, TestingModule } from '@nestjs/testing';
+import { ConfigurableModuleBuilder } from '@nestjs/common';
 
-import { AuthService } from './auth.service';
+import { AuthModuleOptions, Options } from './auth.interfaces';
 
-describe('AuthService', () => {
-  let service: AuthService;
-
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [AuthService],
-    }).compile();
-
-    service = module.get<AuthService>(AuthService);
-  });
-
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
-});
+export const {
+  ConfigurableModuleClass,
+  MODULE_OPTIONS_TOKEN,
+  OPTIONS_TYPE,
+  ASYNC_OPTIONS_TYPE,
+} = new ConfigurableModuleBuilder<
+  AuthModuleOptions,
+  'register',
+  'create',
+  Options
+>().build();

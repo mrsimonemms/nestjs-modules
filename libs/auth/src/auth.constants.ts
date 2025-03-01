@@ -13,13 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { HttpException, HttpStatus } from '@nestjs/common';
 
-export * from './dto';
-export * from './auth.constants';
-export * from './auth.controller';
-export * from './auth.guards';
-export * from './auth.interfaces';
-export * from './auth.module';
-export * from './auth.module-definition';
-export * from './auth.service';
-export * from './auth.strategies';
+export const ACCOUNT_ENTITY = Symbol('ACCOUNT_ENTITY');
+export const AUTH_OPTIONS = Symbol('AUTH_OPTIONS');
+export const AUTH_PATH = Symbol('AUTH_PATH');
+export const AUTH_STRATEGIES = Symbol('AUTH_STRATEGIES');
+export const JWT_SECRET = Symbol('JWT_SECRET');
+export const PASSPORT_STRATEGIES = Symbol('PASSPORT_STRATEGIES');
+export const USER_ENTITY = Symbol('USER_ENTITY');
+
+export class CannotDeleteLastUserException extends HttpException {
+  constructor() {
+    super('Last User Error', HttpStatus.FORBIDDEN);
+  }
+}

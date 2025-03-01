@@ -6,6 +6,8 @@ services:
       DB_NAME: app
       DB_PASSWORD: password
       DB_USERNAME: app
+      AUTH_GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
+      AUTH_GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
     ports:
       - 3000:3000
     working_dir: /home/node/app

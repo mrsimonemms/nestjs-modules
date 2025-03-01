@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 import secureSession from '@fastify/secure-session';
+import { ClassSerializerInterceptor } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import {
   FastifyAdapter,
   NestFastifyApplication,
@@ -30,6 +31,9 @@ async function bootstrap() {
   );
 
   const config = app.get(ConfigService);
+
+  // Required to respect @Exclude decorators
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
   await app.register(secureSession, config.getOrThrow('session'));
 

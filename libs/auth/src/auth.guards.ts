@@ -13,13 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Injectable } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 
-export * from './dto';
-export * from './auth.constants';
-export * from './auth.controller';
-export * from './auth.guards';
-export * from './auth.interfaces';
-export * from './auth.module';
-export * from './auth.module-definition';
-export * from './auth.service';
-export * from './auth.strategies';
+// HTTP version of the guard
+@Injectable()
+export class JWTGuard extends AuthGuard('jwt') {}

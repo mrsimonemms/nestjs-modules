@@ -16,7 +16,12 @@
 import { AuthModule } from '@mrsimonemms/auth';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { Account } from './auth/entities/account.entity';
+import { User } from './auth/entities/user.entity';
+import { GitHubStrategy } from './auth/github.strategy';
 
 @Module({
   imports: [
@@ -24,6 +29,16 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       isGlobal: true,
       load: [
         () => ({
+          auth: {
+            callbackDomain: 'http://localhost:3000',
+            strategies: {
+              github: {
+                clientID: process.env.AUTH_GITHUB_CLIENT_ID ?? '',
+                clientSecret: process.env.AUTH_GITHUB_CLIENT_SECRET ?? '',
+              },
+            },
+          },
+          jwt: { secret: 'my-super-secret-jwt-secret' },
           server: {
             port: 3000,
             host: '0.0.0.0',
@@ -48,13 +63,26 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       synchronize: true,
       autoLoadEntities: true,
     }),
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      global: true,
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.getOrThrow<string>('jwt.secret'),
+        signOptions: {
+          issuer: 'simonemms.com',
+          expiresIn: '30 days',
+        },
+      }),
+    }),
     AuthModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
+      entities: { account: Account, user: User },
+      passportStrategies: [GitHubStrategy],
       useFactory: (cfg: ConfigService) => {
         return {
-          jwtSecret: cfg.getOrThrow('auth.jwtSecret'),
-          passportStrategies: [],
+          jwtSecret: cfg.getOrThrow('jwt.secret'),
           path: 'customPath',
         };
       },
