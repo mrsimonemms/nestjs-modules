@@ -48,8 +48,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { instanceToPlain } from 'class-transformer';
-import { Request as ExpressReq, Response as ExpressRes } from 'express';
-import { FastifyReply } from 'fastify';
+import { Request as ExpressReq } from 'express';
+import { FastifyReply, FastifyRequest } from 'fastify';
 
 import { JWTGuard } from './auth.guards';
 import {
@@ -61,6 +61,7 @@ import {
   UserEntity,
 } from './auth.interfaces';
 import { AuthService } from './auth.service';
+import { fastifyToExpress } from './auth.util';
 import { UpdateUserDTO } from './dto';
 
 @Controller()
@@ -138,8 +139,8 @@ export class AuthController {
   async loginToProvider(
     @Param('providerId') providerId: string,
     @Query('callback') callbackUrl: string,
-    @Req() req: ExpressReq, // This is actually FastifyRequest, but with decorators
-    @Res() res: ExpressRes, // This is actually FastifyReply, but with decorators
+    @Req() req: FastifyRequest, // This is actually FastifyRequest, but with decorators
+    @Res() res: FastifyReply, // This is actually FastifyReply, but with decorators
     @Session() session: FastifySession<AuthSession>,
   ) {
     this.logger.debug('Attempting login', { providerId });
@@ -154,14 +155,23 @@ export class AuthController {
 
     const handler = this.service.getProviderHandler(providerId);
 
-    return handler(req, res, (err?: Error | 'router' | 'route') => {
-      // If we've gotten here, something has gone very wrong
-      this.logger.error('Provider middleware nextfunction has been triggered', {
-        err,
-      });
+    const { req: expressReq, res: expressRes } = fastifyToExpress(req, res);
 
-      throw new InternalServerErrorException(err);
-    });
+    return handler(
+      expressReq,
+      expressRes,
+      (err?: Error | 'router' | 'route') => {
+        // If we've gotten here, something has gone very wrong
+        this.logger.error(
+          'Provider middleware nextfunction has been triggered',
+          {
+            err,
+          },
+        );
+
+        throw new InternalServerErrorException(err);
+      },
+    );
   }
 
   @Get('/login/:providerId/callback')
@@ -176,8 +186,8 @@ export class AuthController {
   })
   async loginCallback(
     @Param('providerId') providerId: string,
-    @Req() req: ExpressReq, // This is actually FastifyRequest, but with decorators
-    @Res() res: ExpressRes, // This is actually FastifyReply, but with decorators
+    @Req() req: FastifyRequest,
+    @Res() res: FastifyReply,
     @Session() session: FastifySession<AuthSession>,
   ) {
     this.logger.debug('Attempting login callback', { providerId });
@@ -186,18 +196,24 @@ export class AuthController {
 
     const handler = this.service.getProviderHandler(providerId);
 
-    return handler(req, res, (err?: Error | 'router' | 'route') => {
-      void this.loginCallbackHandler(
-        err,
-        providerId,
-        req,
-        // More jiggery-pokery. The res is actually the FastifyReply masquerading
-        // as an Express Response and the redirect argments are reversed
-        res as unknown as FastifyReply,
-        session,
-        callbackUrl,
-      );
-    });
+    const { req: expressReq, res: expressRes } = fastifyToExpress(req, res);
+
+    return handler(
+      expressReq,
+      expressRes,
+      (err?: Error | 'router' | 'route') => {
+        void this.loginCallbackHandler(
+          err,
+          providerId,
+          expressReq,
+          // More jiggery-pokery. The res is actually the FastifyReply masquerading
+          // as an Express Response and the redirect argments are reversed
+          res as unknown as FastifyReply,
+          session,
+          callbackUrl,
+        );
+      },
+    );
   }
 
   private async loginCallbackHandler(

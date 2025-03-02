@@ -20,9 +20,7 @@ import {
   OptionalFactoryDependency,
   Provider,
 } from '@nestjs/common';
-import { HttpAdapterHost } from '@nestjs/core';
 import { PassportStrategy } from '@nestjs/passport';
-import { FastifyAdapter } from '@nestjs/platform-fastify';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import {
@@ -138,31 +136,8 @@ export class AuthModule extends ConfigurableModuleClass {
       },
       {
         provide: JWT_SECRET,
-        inject: [AUTH_OPTIONS, HttpAdapterHost],
-        useFactory: (
-          opts: AuthModuleOptions,
-          { httpAdapter }: HttpAdapterHost<FastifyAdapter>,
-        ): string => {
-          // Make the FastifyReply behave like the Express response
-          // @link https://github.com/nestjs/passport/issues/1655
-          httpAdapter
-            .getInstance()
-            .decorateReply(
-              'setHeader',
-              function (
-                key: string,
-                value: number | string | readonly string[],
-              ) {
-                this.raw.setHeader(key, value);
-              },
-            )
-            .decorateReply('end', function () {
-              // Use send so the session cookie onSend hook is triggered
-              this.send();
-            });
-
-          return opts.jwtSecret;
-        },
+        inject: [AUTH_OPTIONS],
+        useFactory: (opts: AuthModuleOptions): string => opts.jwtSecret,
       },
       // Load the strategies into the IOC
       ...(opts.passportStrategies ?? []),
