@@ -250,7 +250,10 @@ export class AuthController {
       if (callbackUrl) {
         this.logger.debug('Redirecting to callback URL', { callbackUrl });
         const redirectURL = new URL(callbackUrl);
-        redirectURL.searchParams.set('token', token);
+        redirectURL.searchParams.set(
+          'token',
+          Buffer.from(token).toString('base64'),
+        );
 
         res.redirect(redirectURL.toString(), 302);
         return;
