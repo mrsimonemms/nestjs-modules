@@ -19,10 +19,13 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-github2';
 
-const strategyName = 'github';
+const strategyName = 'github-strategy-name';
 
 @Injectable()
 export class GitHubStrategy extends PassportStrategy(Strategy, strategyName) {
+  // Need to specify the name property to set the strategy name
+  name = strategyName;
+
   constructor(
     @Inject(ConfigService) config: ConfigService,
     @Inject(AUTH_PATH) path: string,
