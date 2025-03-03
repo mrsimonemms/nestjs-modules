@@ -23,11 +23,13 @@ export type Options = {
     user: Type<UserEntity>;
   };
   passportStrategies: Provider[];
+  providers?: Provider[];
 };
 
 export interface AuthModuleOptions {
   jwtSecret: string;
   passportStrategies?: Options['passportStrategies'];
+  providers?: Options['providers'];
   path?: string;
 }
 

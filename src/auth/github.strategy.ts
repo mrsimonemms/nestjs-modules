@@ -28,6 +28,7 @@ export class GitHubStrategy extends PassportStrategy(Strategy, strategyName) {
 
   constructor(
     @Inject(ConfigService) config: ConfigService,
+    @Inject('GITHUB_VALUE') githubValue: string,
     @Inject(AUTH_PATH) path: string,
   ) {
     super({
@@ -35,6 +36,12 @@ export class GitHubStrategy extends PassportStrategy(Strategy, strategyName) {
       clientSecret: config.getOrThrow('auth.strategies.github.clientSecret'),
       callbackURL: `${config.getOrThrow('auth.callbackDomain')}/${path}/login/${strategyName}/callback`,
       scope: ['read:user', 'user:email', 'repo'],
+    });
+
+    // This is a provider that's registered with the AuthModule - could be useful
+    // if need to inject async values in here
+    console.log({
+      githubValue,
     });
   }
 

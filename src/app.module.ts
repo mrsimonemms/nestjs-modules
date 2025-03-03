@@ -80,6 +80,12 @@ import { GitHubStrategy } from './auth/github.strategy';
       inject: [ConfigService],
       entities: { account: Account, user: User },
       passportStrategies: [GitHubStrategy],
+      providers: [
+        {
+          provide: 'GITHUB_VALUE',
+          useValue: 'some-value',
+        },
+      ],
       useFactory: (cfg: ConfigService) => {
         return {
           jwtSecret: cfg.getOrThrow('jwt.secret'),

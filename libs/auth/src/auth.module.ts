@@ -122,6 +122,7 @@ export class AuthModule extends ConfigurableModuleClass {
       >) ?? [];
 
     return [
+      ...(opts.providers ?? []),
       {
         provide: AUTH_OPTIONS,
         inject: opts.inject,
